@@ -11,9 +11,6 @@ from std_msgs.msg import String # トピック通信に使うStringメッセー�
 from geometry_msgs.msg import Twist # トピック通信に使うTwistメッセージ型をインポート                             
 from nav_msgs.msg import Odometry # nav_msgs.msgモジュールからOdometryクラスをインポート  
 from concurrent.futures import ThreadPoolExecutor  
-#import cv2                      
-import threading
-import asyncio
 
 if sys.platform == 'win32':
     import msvcrt
@@ -58,21 +55,16 @@ class Pose:
         self.y = y                                                                                                
         self.yaw = yaw
         self.n = -1     
-        self.fx=[]
-        self.fy=[]                                                                                        
-                                                                                                                  
+                                                                                               
     def set(self, x, y, yaw,):                                                                                     
         self.x = x                                                                                                
         self.y = y                                                                                                
         self.yaw = yaw 
         self.n = self.n + 1
-        self.fx.append(x)
-        self.fy.append(y)
-
         print("callback:",self.x,self.y,self.yaw,self.n)                                                                                           
                                                                                                                   
     def get(self):                                                                                                
-        return self.x, self.y, self.yaw, self.n, self.fx, self.fy   
+        return self.x, self.y, self.yaw, self.n 
         
 class Teleop_twist(Node):                                                                       
     def __init__(self):                                                                                           
@@ -95,8 +87,7 @@ class Teleop_twist(Node):
         # 角速度成分angularを持つ。       
 
                                                                                                
-        print("*** a:advance b:back p:plot***")                                                                            
-        print("Enter a or b or p key")                                                     
+        print("***start***")                                             
         self.twist = Twist()                                                                                                     
         self.odom  = Odometry()                                                                                   
         self.pose  = Pose()
@@ -107,28 +98,15 @@ class Teleop_twist(Node):
         y = odom.pose.pose.position.y                                                                           
         yaw = np.arctan2(2 * (odom.pose.pose.orientation.w * odom.pose.pose.orientation.z + odom.pose.pose.orientation.x * odom.pose.pose.orientation.y), 1 - 2 *(odom.pose.pose.orientation.y * odom.pose.pose.orientation.y + odom.pose.pose.orientation.z * odom.pose.pose.orientation.z))
         self.pose.set(x, y, yaw)    
-    
-        #print("callback pose =", x, y, yaw)
                                                                  
 
 def main(args=None):                                                                                              
     rclpy.init(args=args) # rclpyモジュールの初期化                                                               
     teleop_twist = Teleop_twist()  # ノードの作成
     signal.signal(signal.SIGINT, handler)
-#パラメータ
     settings = saveTerminalSettings()
-    speed = 1.0
-    turn = 1.0
-    vx_0 = 0.2 #最大速度（0.7m/s以下)
-    vmin_0=0.02 #最低速度
-    vy = 0.0
-    vz = 0.0
-    status = 0.0
-    kz = 1.0 #角速度ゲイン(最大角速度 pi/s)
-    ls=0.2 #最低角速度
-    r = 1/2
-    d=2
-    
+
+    key = getKey(settings)
     while True:
         pass
         teleop_twist.twist = Twist()
