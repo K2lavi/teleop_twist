@@ -10,7 +10,6 @@ from rclpy.node import Node # rclpy.nodeモジュールからNodeクラスをイ
 from std_msgs.msg import String # トピック通信に使うStringメッセージ型をインポート                                
 from geometry_msgs.msg import Twist # トピック通信に使うTwistメッセージ型をインポート                             
 from nav_msgs.msg import Odometry # nav_msgs.msgモジュールからOdometryクラスをインポート  
-from concurrent.futures import ThreadPoolExecutor  
 
 if sys.platform == 'win32':
     import msvcrt
@@ -110,7 +109,7 @@ def main(args=None):
     while True:
         pass
         teleop_twist.twist = Twist()
-        teleop_twist.twist.linear.x = 0.0
+        teleop_twist.twist.linear.x = 0.1
         teleop_twist.twist.angular.z = 0.0 
         teleop_twist.pub.publish(teleop_twist.twist)
         
